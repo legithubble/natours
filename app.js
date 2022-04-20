@@ -14,6 +14,7 @@ const hpp = require('hpp');
 const viewRouter = require('./Routes/viewRoutes');
 const bookingRouter = require('./Routes/bookingRoutes');
 const cookieParser = require('cookie-parser');
+const compression = require('compression');
 
 const app = express();
 
@@ -86,6 +87,7 @@ app.use(
   })
 );
 
+app.use(compression());
 // Serving static files
 
 // Testing middleware
