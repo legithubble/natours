@@ -16,7 +16,9 @@ const bookingRouter = require('./Routes/bookingRoutes');
 const cookieParser = require('cookie-parser');
 const compression = require('compression');
 
+
 const app = express();
+app.enable('trust proxy');
 
 // Use the pug template rendering views engine
 app.set('view engine', 'pug');

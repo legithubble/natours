@@ -34,10 +34,16 @@ const server = app.listen(port, () => {
 
 process.on('unhandledRejection', (err) => {
   console.log(err.name, err.message);
-  console.log("Error : Unhandled Rejection. Shutting down...")
+  console.log('Error : Unhandled Rejection. Shutting down...');
   server.close(() => {
-    process.exit(1)
-  })
+    process.exit(1);
+  });
 });
 
-//random
+// Heroku shuts down the server abruptly every 24hrs. this listening function makes it such that our app shuts down gracefully and doesn't leave any request hanging
+process.on('SIGTERM', () => {
+  console.log('SIGTERM RECEIVED, shutting down server gracefully...');
+  server.close(() => {
+    console.log('Process Terminated');
+  });
+});

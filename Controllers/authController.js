@@ -25,9 +25,9 @@ const cookieOptions = {
   httpOnly: true,
 };
 
-const createSendToken = (user, statusCode, res) => {
+const createSendToken = (user, statusCode, req, res) => {
   const token = signToken(user);
-  if (process.env.NODE_ENV === 'production') cookieOptions.secure = true;
+  if (req.secure || req.headers["x-forwarded-proto"] === "https") cookieOptions.secure = true;
   res.cookie('jwt', token, cookieOptions);
 
   user.password = undefined;
@@ -51,7 +51,7 @@ exports.signup = catchAsync(async (req, res, next) => {
   });
   const url = `${req.protocol}://${req.get('host')}/me`;
   await new Email(newUser, url).sendWelcome();
-  createSendToken(newUser, 201, res);
+  createSendToken(newUser, 201, req, res);
 });
 
 exports.login = catchAsync(async (req, res, next) => {
@@ -70,7 +70,7 @@ exports.login = catchAsync(async (req, res, next) => {
   }
 
   //if everything is ok
-  createSendToken(user, 200, res);
+  createSendToken(user, 200, req, res);
 });
 // Only for rendered pages
 exports.isLoggedIn = async (req, res, next) => {
@@ -232,7 +232,7 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
   await user.save();
 
   //log in user
-  createSendToken(user, 200, res);
+  createSendToken(user, 200, req, res);
 });
 
 exports.updatePassword = catchAsync(async (req, res, next) => {
@@ -249,5 +249,5 @@ exports.updatePassword = catchAsync(async (req, res, next) => {
   await user.save();
 
   //log user in, send JWT
-  createSendToken(user, 200, res);
+  createSendToken(user, 200, req, res);
 });
